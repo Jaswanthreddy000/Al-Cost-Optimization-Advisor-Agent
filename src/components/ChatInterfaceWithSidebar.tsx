@@ -2,12 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Loader2, AlertCircle } from 'lucide-react';
+import { Toggle } from "@/components/ui/toggle";
+import { Send, Bot, User, Loader2, AlertCircle, Brain, BarChart, FileText } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from '@/hooks/useAuth';
 import { useChatSession } from '@/hooks/useChatSession';
 import ChatSidebar from './ChatSidebar';
 import TableChart from './TableChart';
+import DashboardRenderer from './DashboardRenderer';
+import PdfDownloadControls from './PdfDownloadControls';
+import MessageCheckbox from './MessageCheckbox';
 import { detectTablesInText } from '@/utils/tableDetector';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -30,6 +34,9 @@ const ChatInterfaceWithSidebar = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [messageViewModes, setMessageViewModes] = useState<{[key: string]: 'text' | 'dashboard'}>({});
+  const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -41,16 +48,30 @@ const ChatInterfaceWithSidebar = () => {
   }, [messages]);
 
   const handleNewChat = async () => {
-    // Clear current session first
     clearCurrentSession();
-    // Then create new session
     await createNewSession();
   };
 
   const handleSessionSelect = async (sessionId: string) => {
-    // Clear current session before loading new one
     clearCurrentSession();
     await loadSession(sessionId);
+  };
+
+  const toggleMessageView = (messageId: string) => {
+    setMessageViewModes(prev => ({
+      ...prev,
+      [messageId]: prev[messageId] === 'dashboard' ? 'text' : 'dashboard'
+    }));
+  };
+
+  const handleMessageToggle = (messageId: string) => {
+    const newSelected = new Set(selectedMessages);
+    if (newSelected.has(messageId)) {
+      newSelected.delete(messageId);
+    } else {
+      newSelected.add(messageId);
+    }
+    setSelectedMessages(newSelected);
   };
 
   const sendMessage = async () => {
@@ -58,7 +79,6 @@ const ChatInterfaceWithSidebar = () => {
 
     let sessionId = currentSessionId;
     
-    // Create new session if none exists
     if (!sessionId) {
       sessionId = await createNewSession();
       if (!sessionId) return;
@@ -69,10 +89,8 @@ const ChatInterfaceWithSidebar = () => {
     setIsLoading(true);
     setError(null);
 
-    // Save user message
     await saveMessage(userMessageContent, 'user');
 
-    // Update session title with first user message if it's still "New Chat"
     const nonWelcomeMessages = messages.filter(msg => !msg.id.startsWith('welcome-'));
     const isFirstMessage = nonWelcomeMessages.length <= 1;
     if (isFirstMessage && sessionId) {
@@ -102,7 +120,6 @@ const ChatInterfaceWithSidebar = () => {
       const data = await response.json();
       const assistantResponse = data.response || "I apologize, but I couldn't process your request. Please try again.";
 
-      // Save assistant message
       await saveMessage(assistantResponse, 'assistant');
       
     } catch (error) {
@@ -134,25 +151,42 @@ const ChatInterfaceWithSidebar = () => {
   };
 
   const renderMessageContent = (message: any) => {
+    const viewMode = messageViewModes[message.id] || 'text';
+    
+    if (viewMode === 'dashboard') {
+     
+      return <DashboardRenderer content={message.content} />;
+    }
+    
+    // Text view with tables and markdown
     const tables = detectTablesInText(message.content);
     
     if (tables.length > 0) {
-      // Split content by table positions to render text and tables separately
-      const parts = [];
-      let lastIndex = 0;
-      
-      // For simplicity, show text first then all tables
-      const textParts = message.content.split('\n').filter((line: string) => {
+      // Split content to show tables separately
+      const contentWithoutTables = message.content.split('\n').filter((line: string) => {
         const hasTableMarkers = line.includes('|') || /\s{3,}/.test(line);
         return !hasTableMarkers || line.trim().length === 0;
-      });
+      }).join('\n');
       
       return (
-        <div>
-          {textParts.length > 0 && (
-            <p className="text-sm leading-relaxed whitespace-pre-wrap mb-4">
-              {textParts.join('\n')}
-            </p>
+        <div className="space-y-4">
+          {contentWithoutTables.trim() && (
+            <div className="prose max-w-none text-sm leading-relaxed">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]} 
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="mt-4 mb-2 text-xl font-bold" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="mt-4 mb-2 text-lg font-semibold" {...props} />,
+                  h3: ({ node, ...props }) => <h3 className="mt-4 mb-2 text-base font-medium" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+                  ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                  ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2" {...props} />,
+                }}
+              >
+                {contentWithoutTables}
+              </ReactMarkdown>
+            </div>
           )}
           {tables.map((table, index) => (
             <TableChart key={index} table={table} index={index} />
@@ -160,6 +194,7 @@ const ChatInterfaceWithSidebar = () => {
         </div>
       );
     }
+    
     
     return (
       <div className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -182,6 +217,26 @@ const ChatInterfaceWithSidebar = () => {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
+       
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 p-9">
+          <div className="flex items-center justify-center space-x-3">
+           
+            <div className="text-center">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Get instant insights on AI costs, ROI analysis, and optimization strategies
+              </h1>
+             
+             
+            </div>
+          </div>
+        </div>
+
+        {/* PDF Download Controls */}
+        <PdfDownloadControls 
+          messages={messages} 
+          sessionId={currentSessionId}
+        />
+
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.map((message) => (
@@ -189,7 +244,15 @@ const ChatInterfaceWithSidebar = () => {
               key={message.id}
               className={`flex w-full ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`flex items-start space-x-3 w-full max-w-3xl ${message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+              <div className={`flex items-start space-x-3 max-w-xs lg:max-w-5xl ${message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''} relative`}>
+                {/* Message Checkbox */}
+                <MessageCheckbox
+                  messageId={message.id}
+                  isSelected={selectedMessages.has(message.id)}
+                  onToggle={handleMessageToggle}
+                  showCheckboxes={showCheckboxes}
+                />
+
                 {/* Avatar */}
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   message.sender === 'user' 
@@ -209,27 +272,40 @@ const ChatInterfaceWithSidebar = () => {
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-gray-900 border border-gray-200 shadow-sm'
                 }`}>
-                 
-                    <div className="text-sm leading-relaxed prose max-w-none">
-                    <ReactMarkdown 
-                      remarkPlugins={[remarkGfm]} 
-                      rehypePlugins={[rehypeRaw]}
-                      components={{
-                        h1: ({ node, ...props }) => <h1 className="mt-6 mb-2 text-2xl font-bold" {...props} />,
-                        h2: ({ node, ...props }) => <h2 className="mt-6 mb-2 text-xl font-semibold" {...props} />,
-                        h3: ({ node, ...props }) => <h3 className="mt-6 mb-2 text-lg font-medium" {...props} />,
-                        p: ({ node, ...props }) => <p className="mb-3" {...props} />,
-                        ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3" {...props} />,
-                        ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-3" {...props} />,
-                      }}
-                    >
-                      {message.content}
-                    </ReactMarkdown>
-                  </div>
+                  {/* Toggle Button for AI messages */}
+                  {message.sender === 'assistant' && (
+                    <div className="flex justify-end mb-3">
+                      <Toggle
+                        pressed={messageViewModes[message.id] === 'dashboard'}
+                        onPressedChange={() => toggleMessageView(message.id)}
+                        size="sm"
+                        className="h-7 px-3 text-xs"
+                      >
+                        {messageViewModes[message.id] === 'dashboard' ? (
+                          <>
+                            <FileText className="w-3 h-3 mr-1" />
+                            Text View
+                          </>
+                        ) : (
+                          <>
+                            <BarChart className="w-3 h-3 mr-1" />
+                            Dashboard View
+                          </>
+                        )}
+                      </Toggle>
+                    </div>
+                  )}
                   
-
+                  {/* Message Content */}
+                  {message.sender === 'user' ? (
+                    <div className="prose max-w-none text-sm leading-relaxed">
+                      <p className="text-white">{message.content}</p>
+                    </div>
+                  ) : (
+                    renderMessageContent(message)
+                  )}
                   
-                  <span className={`text-xs mt-2 block ${
+                  <span className={`text-xs mt-3 block ${
                     message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
                   }`}>
                     {!message.id.startsWith('welcome-') ? formatTime(message.created_at) : 'Now'}
