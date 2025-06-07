@@ -49,7 +49,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
   const [categories, setCategories] = useState<ComponentCategory[]>([
     {
       id: 'cloud',
-      name: '☁️ Cloud Providers',
+      name: 'Cloud Providers',
       icon: <Cloud className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -61,7 +61,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'ai-providers',
-      name: '🤖 AI Providers',
+      name: 'AI Providers',
       icon: <Bot className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -74,7 +74,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'data-sources',
-      name: '🗂️ Data Sources',
+      name: ' Data Sources',
       icon: <FileText className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -85,7 +85,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'databases',
-      name: '🗃️ Databases',
+      name: 'Databases',
       icon: <Database className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -96,7 +96,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'logic',
-      name: '⚙️ Logic',
+      name: ' Logic',
       icon: <Cog className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -107,7 +107,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'outputs',
-      name: '📤 Outputs',
+      name: 'Outputs',
       icon: <Send className="h-4 w-4" />,
       expanded: false,
       items: [

@@ -395,9 +395,9 @@ output "workflow_info" {
       {/* Left Section - Logo and Main Menu */}
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+          {/* <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
             <FileText className="h-5 w-5 text-white" />
-          </div>
+          </div> */}
           <span className="text-lg font-semibold text-gray-900">Workflow Builder</span>
           <Badge variant="secondary" className="text-xs">Beta</Badge>
         </div>
