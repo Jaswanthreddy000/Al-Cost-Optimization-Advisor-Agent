@@ -1,12 +1,12 @@
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBH8vCZk4qO5mH2g6vK3dF8qR7sT9pL1mN2",
-  authDomain: "ai-cost-optimizer.firebaseapp.com",
-  projectId: "ai-cost-optimizer",
-  storageBucket: "ai-cost-optimizer.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef123456789012345",
-  measurementId: "G-ABCDEFGHIJ"
+  apiKey: "AIzaSyCfLTP82i0r6vs2tZIgxapLhLsJ8Pg0LdQ",
+  authDomain: "aicostoptimiser.firebaseapp.com",
+  projectId: "aicostoptimiser",
+  storageBucket: "aicostoptimiser.firebasestorage.app",
+  messagingSenderId: "1007132779232",
+  appId: "1:1007132779232:web:49f276d7cd50637342a685",
+  measurementId: "G-PR4V257LE0"
 };
 
 import { initializeApp } from 'firebase/app';
