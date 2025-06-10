@@ -96,7 +96,7 @@ export type Database = {
         Row: {
           created_at: string
           edge_id: string
-          edge_type: string | null
+          edge_type: string
           id: string
           source_handle: string | null
           source_node_id: string
@@ -108,7 +108,7 @@ export type Database = {
         Insert: {
           created_at?: string
           edge_id: string
-          edge_type?: string | null
+          edge_type?: string
           id?: string
           source_handle?: string | null
           source_node_id: string
@@ -120,7 +120,7 @@ export type Database = {
         Update: {
           created_at?: string
           edge_id?: string
-          edge_type?: string | null
+          edge_type?: string
           id?: string
           source_handle?: string | null
           source_node_id?: string
@@ -198,17 +198,17 @@ export type Database = {
           name: string
           updated_at: string
           user_id: string
-          version: string | null
+          version: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
           metadata?: Json | null
-          name?: string
+          name: string
           updated_at?: string
           user_id: string
-          version?: string | null
+          version?: string
         }
         Update: {
           created_at?: string
@@ -218,7 +218,7 @@ export type Database = {
           name?: string
           updated_at?: string
           user_id?: string
-          version?: string | null
+          version?: string
         }
         Relationships: []
       }

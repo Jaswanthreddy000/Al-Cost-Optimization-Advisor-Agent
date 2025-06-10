@@ -3,41 +3,53 @@ import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileOutput, Mail, Webhook } from 'lucide-react';
+import { FileOutput, Mail, MessageSquare, Send } from 'lucide-react';
 
 const OutputNode = ({ data }: { data: any }) => {
   const getIcon = () => {
     switch (data.subtype) {
       case 'pdf': return <FileOutput className="h-4 w-4" />;
       case 'email': return <Mail className="h-4 w-4" />;
-      case 'webhook': return <Webhook className="h-4 w-4" />;
+      case 'slack': return <MessageSquare className="h-4 w-4" />;
+      case 'webhook': return <Send className="h-4 w-4" />;
       default: return <FileOutput className="h-4 w-4" />;
     }
   };
 
+  const getDisplayInfo = () => {
+    switch (data.subtype) {
+      case 'pdf':
+        return { label: 'Format', value: data.config?.format || 'A4' };
+      case 'email':
+        return { label: 'Subject', value: data.config?.subject || 'Not set' };
+      case 'slack':
+        return { label: 'Channel', value: data.config?.channel || 'Not set' };
+      case 'webhook':
+        return { label: 'Method', value: data.config?.method || 'POST' };
+      default:
+        return { label: 'Type', value: data.subtype || 'Unknown' };
+    }
+  };
+
+  const displayInfo = getDisplayInfo();
+
   return (
-    <Card className="min-w-[200px] border-red-200 bg-red-50">
+    <Card className="min-w-[180px] max-w-[200px] border-red-200 bg-red-50 shadow-sm">
       <CardContent className="p-3">
         <div className="flex items-center gap-2 mb-2">
-          <div className="text-red-600">
+          <div className="text-red-600 flex-shrink-0">
             {getIcon()}
           </div>
-          <span className="font-medium text-sm">{data.label}</span>
-          <Badge variant="secondary" className="text-xs">
+          <span className="font-medium text-sm text-gray-900 truncate flex-1">{data.label}</span>
+          <Badge variant="secondary" className="text-xs flex-shrink-0">
             Output
           </Badge>
         </div>
         
-        <div className="text-xs text-gray-600 space-y-1">
-          {data.subtype === 'pdf' && (
-            <div>Format: {data.config?.format || 'A4'}</div>
-          )}
-          {data.subtype === 'email' && (
-            <div>Subject: {data.config?.subject || 'Not set'}</div>
-          )}
-          {data.subtype === 'webhook' && (
-            <div>Method: {data.config?.method || 'POST'}</div>
-          )}
+        <div className="text-xs text-gray-600">
+          <div className="truncate">
+            <span className="font-medium">{displayInfo.label}:</span> {displayInfo.value}
+          </div>
         </div>
 
         <Handle

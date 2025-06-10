@@ -18,72 +18,73 @@ import rehypeRaw from 'rehype-raw';
 import ReactMarkdown from 'react-markdown';
 
 interface AgentResponse {
-  textView: string;
-  dashboardView: {
-    summaryCards: any[];
-    tables: any[];
-    charts: any[];
-    alerts: any[];
-    recommendations: any[];
+  response?: string;
+  textView?: string;
+  dashboardView?: {
+    summaryCards?: any[];
+    tables?: any[];
+    charts?: any[];
+    alerts?: any[];
+    recommendations?: any[];
   };
 }
 
 const ChatInterfaceWithSidebar = () => {
-    const { user } = useAuth();
-    const {
-      currentSessionId,
-      messages,
-      isLoading: sessionLoading,
-      createNewSession,
-      loadSession,
-      saveMessage,
-      updateSessionTitle,
-      setMessages,
-      clearCurrentSession,
-    } = useChatSession();
-  
-    const [inputMessage, setInputMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [messageViewModes, setMessageViewModes] = useState<{[key: string]: 'text' | 'dashboard'}>({});
-    const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
-    const [showCheckboxes, setShowCheckboxes] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-    const scrollToBottom = () => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-  
-    useEffect(() => {
-      scrollToBottom();
-    }, [messages]);
-  
-    const handleNewChat = async () => {
-      clearCurrentSession();
-      await createNewSession();
-    };
-  
-    const handleSessionSelect = async (sessionId: string) => {
-      clearCurrentSession();
-      await loadSession(sessionId);
-    };
-  
-    const toggleMessageView = (messageId: string) => {
-      setMessageViewModes(prev => ({
-        ...prev,
-        [messageId]: prev[messageId] === 'dashboard' ? 'text' : 'dashboard'
-      }));
-    };
-  
-    const handleMessageToggle = (messageId: string) => {
-      const newSelected = new Set(selectedMessages);
-      if (newSelected.has(messageId)) {
-        newSelected.delete(messageId);
-      } else {
-        newSelected.add(messageId);
-      }
-      setSelectedMessages(newSelected);
-    };
+  const { user } = useAuth();
+  const {
+    currentSessionId,
+    messages,
+    isLoading: sessionLoading,
+    createNewSession,
+    loadSession,
+    saveMessage,
+    updateSessionTitle,
+    setMessages,
+    clearCurrentSession,
+  } = useChatSession();
+
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [messageViewModes, setMessageViewModes] = useState<{[key: string]: 'text' | 'dashboard'}>({});
+  const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleNewChat = async () => {
+    clearCurrentSession();
+    await createNewSession();
+  };
+
+  const handleSessionSelect = async (sessionId: string) => {
+    clearCurrentSession();
+    await loadSession(sessionId);
+  };
+
+  const toggleMessageView = (messageId: string) => {
+    setMessageViewModes(prev => ({
+      ...prev,
+      [messageId]: prev[messageId] === 'dashboard' ? 'text' : 'dashboard'
+    }));
+  };
+
+  const handleMessageToggle = (messageId: string) => {
+    const newSelected = new Set(selectedMessages);
+    if (newSelected.has(messageId)) {
+      newSelected.delete(messageId);
+    } else {
+      newSelected.add(messageId);
+    }
+    setSelectedMessages(newSelected);
+  };
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading || !user) return;
@@ -109,16 +110,18 @@ const ChatInterfaceWithSidebar = () => {
     }
     
     try {
-      const response = await fetch(import.meta.env.VITE_AGENT_API_URL, {
+      console.log('Sending message to agent API:', userMessageContent);
+      
+      const response = await fetch('https://agent-prod.studio.lyzr.ai/v3/inference/chat/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': import.meta.env.VITE_AGENT_API_KEY
+          'x-api-key': 'sk-default-DDZnBXRl6l6iKKj7YT39T4rCh4Qvb7za'
         },
         body: JSON.stringify({
-          user_id: import.meta.env.VITE_DEFAULT_USER_EMAIL,
-          agent_id: import.meta.env.VITE_AGENT_ID,
-          session_id: import.meta.env.VITE_SESSION_ID,
+          user_id: 'jaswanth6365@gmail.com',
+          agent_id: '683d63dfe5bd32ccbe6470a8',
+          session_id: '683d63dfe5bd32ccbe6470a8-1rw8wb2mp7r',
           message: userMessageContent
         })
       });
@@ -183,21 +186,13 @@ const ChatInterfaceWithSidebar = () => {
         variant: "destructive",
       });
       
-      const errorMessage = JSON.stringify({
-        textView: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
-        dashboardView: {
-          summaryCards: [],
-          tables: [],
-          charts: [],
-          alerts: [],
-          recommendations: []
-        }
-      });
+      const errorMessage = "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.";
       await saveMessage(errorMessage, 'assistant');
     } finally {
       setIsLoading(false);
     }
   };
+  
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -367,7 +362,6 @@ const renderMessageContent = (message: any) => {
     }
   };
 
-  // ... rest of the component remains the same ...
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Sidebar */}
@@ -498,7 +492,7 @@ const renderMessageContent = (message: any) => {
           {error && (
             <div className="flex justify-center">
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 text-red-600" />
+                <AlertCircle className="w-4 w-4 text-red-600" />
                 <span className="text-sm text-red-600">{error}</span>
               </div>
             </div>

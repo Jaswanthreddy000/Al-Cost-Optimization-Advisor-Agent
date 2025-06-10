@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +20,7 @@ interface Profile {
 }
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,16 +29,37 @@ const Profile = () => {
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
+  console.log('Profile page - Auth loading:', authLoading, 'User:', user?.email);
+
   useEffect(() => {
-    if (!user) {
+    // Wait for auth to complete loading
+    if (authLoading) {
+      console.log('Profile: Still loading auth...');
+      return;
+    }
+
+    // If auth is done loading and no user, redirect to auth
+    if (!authLoading && !user) {
+      console.log('Profile: No user found, redirecting to auth');
       navigate('/auth');
       return;
     }
-    fetchProfile();
-  }, [user, navigate]);
+
+    // If we have a user, fetch profile
+    if (user) {
+      console.log('Profile: User found, fetching profile for:', user.email);
+      fetchProfile();
+    }
+  }, [user, authLoading, navigate]);
 
   const fetchProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('Profile: No user ID available');
+      return;
+    }
+
+    console.log('Profile: Fetching profile for user ID:', user.id);
+    setIsLoading(true);
 
     try {
       const { data, error } = await supabase
@@ -48,13 +68,17 @@ const Profile = () => {
         .eq('id', user.id)
         .single();
 
+      console.log('Profile: Fetch result:', { data, error });
+
       if (error && error.code !== 'PGRST116') throw error;
       
       if (data) {
         setProfile(data);
         setFullName(data.full_name || '');
         setAvatarUrl(data.avatar_url || '');
+        console.log('Profile: Profile loaded successfully');
       } else {
+        console.log('Profile: No profile found, creating new one');
         // Create profile if it doesn't exist
         const newProfile = {
           id: user.id,
@@ -75,6 +99,7 @@ const Profile = () => {
         setProfile(createdProfile);
         setFullName(createdProfile.full_name || '');
         setAvatarUrl(createdProfile.avatar_url || '');
+        console.log('Profile: New profile created');
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -204,7 +229,8 @@ const Profile = () => {
     ? fullName.split(' ').map(n => n[0]).join('').toUpperCase()
     : user?.email?.charAt(0).toUpperCase() || 'U';
 
-  if (isLoading) {
+  // Show loading while auth is loading or profile is loading
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
@@ -212,6 +238,17 @@ const Profile = () => {
             <User className="h-8 w-8 text-white animate-pulse" />
           </div>
           <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no user (shouldn't reach here due to redirect)
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting to login...</p>
         </div>
       </div>
     );

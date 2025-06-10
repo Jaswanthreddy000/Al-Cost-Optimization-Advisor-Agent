@@ -19,7 +19,9 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize2,
-  FolderOpen
+  FolderOpen,
+  Trash2,
+  Edit
 } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { Node, Edge } from '@xyflow/react';
@@ -27,6 +29,7 @@ import { useWorkflows } from '@/hooks/useWorkflows';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import jsPDF from 'jspdf';
 
 interface WorkflowTopNavigationProps {
   nodes: Node[];
@@ -57,7 +60,7 @@ const WorkflowTopNavigation = ({
   onLoadWorkflow,
   onLoadWorkflowFromDB
 }: WorkflowTopNavigationProps) => {
-  const { workflows, loading } = useWorkflows();
+  const { workflows, loading, deleteWorkflow } = useWorkflows();
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveAsTemplateDialogOpen, setSaveAsTemplateDialogOpen] = useState(false);
   const [workflowName, setWorkflowName] = useState('');
@@ -70,10 +73,30 @@ const WorkflowTopNavigation = ({
       name: 'HR Automation Pipeline', 
       description: 'Resume screening, candidate matching, and interview scheduling',
       nodes: [
-        { id: 'resume-parser', type: 'dataSource', subtype: 'file', label: 'Resume Parser', position: { x: 100, y: 100 } },
-        { id: 'skill-extractor', type: 'aiModel', subtype: 'openai', label: 'Skill Extractor', provider: 'openai', config: { model: 'gpt-4', maxTokens: 2000 }, position: { x: 300, y: 100 } },
-        { id: 'candidate-db', type: 'database', subtype: 'postgres', label: 'Candidate Database', position: { x: 500, y: 100 } },
-        { id: 'email-notify', type: 'output', subtype: 'email', label: 'Email Notification', position: { x: 700, y: 100 } }
+        { 
+          id: 'resume-parser', 
+          type: 'dataSource', 
+          data: { label: 'File Upload', subtype: 'file' }, 
+          position: { x: 100, y: 100 } 
+        },
+        { 
+          id: 'skill-extractor', 
+          type: 'aiModel', 
+          data: { label: 'OpenAI', subtype: 'openai', provider: 'openai' }, 
+          position: { x: 300, y: 100 } 
+        },
+        { 
+          id: 'candidate-db', 
+          type: 'database', 
+          data: { label: 'PostgreSQL', subtype: 'postgres' }, 
+          position: { x: 500, y: 100 } 
+        },
+        { 
+          id: 'email-notify', 
+          type: 'output', 
+          data: { label: 'Email', subtype: 'email' }, 
+          position: { x: 700, y: 100 } 
+        }
       ],
       edges: [
         { id: 'e1', source: 'resume-parser', target: 'skill-extractor' },
@@ -86,11 +109,36 @@ const WorkflowTopNavigation = ({
       name: 'Finance Analysis Workflow', 
       description: 'Invoice processing, expense categorization, and financial reporting',
       nodes: [
-        { id: 'invoice-upload', type: 'dataSource', subtype: 'file', label: 'Invoice Upload', position: { x: 100, y: 100 } },
-        { id: 'ocr-processor', type: 'aiModel', subtype: 'openai', label: 'OCR Processor', provider: 'openai', config: { model: 'gpt-4', maxTokens: 1500 }, position: { x: 300, y: 100 } },
-        { id: 'expense-categorizer', type: 'logic', subtype: 'filter', label: 'Expense Categorizer', position: { x: 500, y: 100 } },
-        { id: 'financial-db', type: 'database', subtype: 'postgres', label: 'Financial Database', position: { x: 700, y: 100 } },
-        { id: 'report-generator', type: 'output', subtype: 'pdf', label: 'Report Generator', position: { x: 900, y: 100 } }
+        { 
+          id: 'invoice-upload', 
+          type: 'dataSource', 
+          data: { label: 'File Upload', subtype: 'file' }, 
+          position: { x: 100, y: 100 } 
+        },
+        { 
+          id: 'ocr-processor', 
+          type: 'aiModel', 
+          data: { label: 'OpenAI', subtype: 'openai', provider: 'openai' }, 
+          position: { x: 300, y: 100 } 
+        },
+        { 
+          id: 'expense-categorizer', 
+          type: 'logic', 
+          data: { label: 'Filter', subtype: 'filter' }, 
+          position: { x: 500, y: 100 } 
+        },
+        { 
+          id: 'financial-db', 
+          type: 'database', 
+          data: { label: 'PostgreSQL', subtype: 'postgres' }, 
+          position: { x: 700, y: 100 } 
+        },
+        { 
+          id: 'report-generator', 
+          type: 'output', 
+          data: { label: 'PDF Generator', subtype: 'pdf' }, 
+          position: { x: 900, y: 100 } 
+        }
       ],
       edges: [
         { id: 'e1', source: 'invoice-upload', target: 'ocr-processor' },
@@ -104,10 +152,30 @@ const WorkflowTopNavigation = ({
       name: 'Marketing Content Pipeline', 
       description: 'Content generation, social media automation, and performance tracking',
       nodes: [
-        { id: 'content-brief', type: 'dataSource', subtype: 'api', label: 'Content Brief API', position: { x: 100, y: 100 } },
-        { id: 'content-generator', type: 'aiModel', subtype: 'openai', label: 'Content Generator', provider: 'openai', config: { model: 'gpt-4', maxTokens: 3000 }, position: { x: 300, y: 100 } },
-        { id: 'image-generator', type: 'aiModel', subtype: 'openai', label: 'Image Generator', provider: 'openai', config: { model: 'dall-e-3', maxTokens: 1000 }, position: { x: 500, y: 100 } },
-        { id: 'social-scheduler', type: 'output', subtype: 'webhook', label: 'Social Scheduler', position: { x: 700, y: 100 } }
+        { 
+          id: 'content-brief', 
+          type: 'dataSource', 
+          data: { label: 'API Gateway', subtype: 'api' }, 
+          position: { x: 100, y: 100 } 
+        },
+        { 
+          id: 'content-generator', 
+          type: 'aiModel', 
+          data: { label: 'OpenAI', subtype: 'openai', provider: 'openai' }, 
+          position: { x: 300, y: 100 } 
+        },
+        { 
+          id: 'image-generator', 
+          type: 'aiModel', 
+          data: { label: 'OpenAI', subtype: 'openai', provider: 'openai' }, 
+          position: { x: 500, y: 100 } 
+        },
+        { 
+          id: 'social-scheduler', 
+          type: 'output', 
+          data: { label: 'Slack', subtype: 'slack' }, 
+          position: { x: 700, y: 100 } 
+        }
       ],
       edges: [
         { id: 'e1', source: 'content-brief', target: 'content-generator' },
@@ -209,9 +277,10 @@ const WorkflowTopNavigation = ({
               throw new Error('Invalid workflow format: missing nodes array');
             }
             onLoadWorkflow(workflow);
+            const workflowName = workflow.metadata?.name;
             toast({
               title: "Workflow Imported",
-              description: `Imported workflow: ${workflow.metadata?.name || 'Unnamed'}`,
+              description: `Imported workflow: ${typeof workflowName === 'string' ? workflowName : 'Unnamed'}`,
             });
           } catch (error) {
             console.error('Import error:', error);
@@ -390,14 +459,193 @@ output "workflow_info" {
     return config;
   };
 
+  const handleDeleteWorkflow = async (workflowId: string, workflowName: string) => {
+    if (window.confirm(`Are you sure you want to delete "${workflowName}"? This action cannot be undone.`)) {
+      try {
+        await deleteWorkflow(workflowId);
+        toast({
+          title: "Success",
+          description: `Workflow "${workflowName}" deleted successfully`,
+        });
+      } catch (error) {
+        console.error('Delete workflow error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete workflow. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleExportPDF = () => {
+    if (nodes.length === 0) {
+      toast({
+        title: "No Components",
+        description: "Please add some workflow components before exporting PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Add title
+      pdf.setFontSize(20);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('AI Workflow Diagram', 20, 25);
+      
+      // Add metadata
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 35);
+      pdf.text(`Components: ${nodes.length} | Connections: ${edges.length}`, 20, 42);
+      
+      // Calculate workflow bounds
+      const minX = Math.min(...nodes.map(n => n.position.x));
+      const maxX = Math.max(...nodes.map(n => n.position.x + 200));
+      const minY = Math.min(...nodes.map(n => n.position.y));
+      const maxY = Math.max(...nodes.map(n => n.position.y + 100));
+      
+      const workflowWidth = maxX - minX;
+      const workflowHeight = maxY - minY;
+      
+      // Scale to fit page
+      const availableWidth = pageWidth - 40;
+      const availableHeight = pageHeight - 80;
+      const scale = Math.min(availableWidth / workflowWidth, availableHeight / workflowHeight, 1);
+      
+      // Draw nodes
+      nodes.forEach((node) => {
+        const x = 20 + (node.position.x - minX) * scale;
+        const y = 60 + (node.position.y - minY) * scale;
+        const width = 50 * scale;
+        const height = 25 * scale;
+        
+        // Node background
+        pdf.setFillColor(240, 240, 240);
+        pdf.rect(x, y, width, height, 'F');
+        
+        // Node border with type-specific colors
+        switch (node.type) {
+          case 'dataSource':
+            pdf.setDrawColor(59, 130, 246);
+            break;
+          case 'aiModel':
+            pdf.setDrawColor(139, 92, 246);
+            break;
+          case 'database':
+            pdf.setDrawColor(16, 185, 129);
+            break;
+          case 'logic':
+            pdf.setDrawColor(245, 158, 11);
+            break;
+          case 'output':
+            pdf.setDrawColor(239, 68, 68);
+            break;
+          case 'cloud':
+            pdf.setDrawColor(6, 182, 212);
+            break;
+          default:
+            pdf.setDrawColor(107, 114, 128);
+        }
+        pdf.setLineWidth(0.5);
+        pdf.rect(x, y, width, height);
+        
+        // Node text
+        pdf.setFontSize(8);
+        pdf.setTextColor(0, 0, 0);
+        const text = String(node.data?.label || node.type || '');
+        const textWidth = pdf.getTextWidth(text);
+        const textX = x + (width - textWidth) / 2;
+        const textY = y + height / 2 + 1;
+        pdf.text(text, textX, textY);
+      });
+      
+      // Draw edges
+      pdf.setDrawColor(100, 100, 100);
+      pdf.setLineWidth(0.3);
+      edges.forEach((edge) => {
+        const sourceNode = nodes.find(n => n.id === edge.source);
+        const targetNode = nodes.find(n => n.id === edge.target);
+        
+        if (sourceNode && targetNode) {
+          const sourceX = 20 + (sourceNode.position.x - minX) * scale + (25 * scale);
+          const sourceY = 60 + (sourceNode.position.y - minY) * scale + (12.5 * scale);
+          const targetX = 20 + (targetNode.position.x - minX) * scale + (25 * scale);
+          const targetY = 60 + (targetNode.position.y - minY) * scale + (12.5 * scale);
+          
+          pdf.line(sourceX, sourceY, targetX, targetY);
+          
+          // Add arrow head
+          const angle = Math.atan2(targetY - sourceY, targetX - sourceX);
+          const arrowLength = 3 * scale;
+          const arrowAngle = 0.5;
+          
+          pdf.line(
+            targetX, targetY,
+            targetX - arrowLength * Math.cos(angle - arrowAngle),
+            targetY - arrowLength * Math.sin(angle - arrowAngle)
+          );
+          pdf.line(
+            targetX, targetY,
+            targetX - arrowLength * Math.cos(angle + arrowAngle),
+            targetY - arrowLength * Math.sin(angle + arrowAngle)
+          );
+        }
+      });
+      
+      // Add legend
+      const legendY = pageHeight - 30;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Legend:', 20, legendY);
+      
+      const legendItems = [
+        { type: 'Data Sources', color: [59, 130, 246] },
+        { type: 'AI Models', color: [139, 92, 246] },
+        { type: 'Databases', color: [16, 185, 129] },
+        { type: 'Logic', color: [245, 158, 11] },
+        { type: 'Outputs', color: [239, 68, 68] },
+        { type: 'Cloud', color: [6, 182, 212] }
+      ];
+      
+      legendItems.forEach((item, index) => {
+        const x = 60 + (index * 40);
+        pdf.setFillColor(item.color[0], item.color[1], item.color[2]);
+        pdf.rect(x, legendY - 5, 5, 3, 'F');
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(item.type, x + 7, legendY - 2);
+      });
+      
+      // Save PDF
+      const fileName = `workflow-diagram-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      
+      toast({
+        title: "PDF Exported",
+        description: "Workflow diagram saved as PDF successfully",
+      });
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast({
+        title: "Export Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
       {/* Left Section - Logo and Main Menu */}
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
-          {/* <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
-            <FileText className="h-5 w-5 text-white" />
-          </div> */}
           <span className="text-lg font-semibold text-gray-900">Workflow Builder</span>
           <Badge variant="secondary" className="text-xs">Beta</Badge>
         </div>
@@ -453,6 +701,38 @@ output "workflow_info" {
             </MenubarContent>
           </MenubarMenu>
 
+          {/* Edit Menu */}
+          <MenubarMenu>
+            <MenubarTrigger className="text-sm">Edit</MenubarTrigger>
+            <MenubarContent>
+              {workflows.length > 0 ? (
+                <>
+                  <MenubarItem disabled className="font-medium">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Manage Workflows
+                  </MenubarItem>
+                  {workflows.map((workflow) => (
+                    <MenubarItem 
+                      key={workflow.id}
+                      onClick={() => handleDeleteWorkflow(workflow.id, workflow.name)}
+                      className="pl-6 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      <div>
+                        <div className="font-medium">Delete {workflow.name}</div>
+                        <div className="text-xs text-gray-500">Remove this workflow permanently</div>
+                      </div>
+                    </MenubarItem>
+                  ))}
+                </>
+              ) : (
+                <MenubarItem disabled>
+                  No workflows to manage
+                </MenubarItem>
+              )}
+            </MenubarContent>
+          </MenubarMenu>
+
           {/* Templates Menu */}
           <MenubarMenu>
             <MenubarTrigger className="text-sm">Templates</MenubarTrigger>
@@ -483,7 +763,7 @@ output "workflow_info" {
                 <Download className="h-4 w-4 mr-2" />
                 JSON Configuration
               </MenubarItem>
-              <MenubarItem onClick={onExportPDF}>
+              <MenubarItem onClick={handleExportPDF}>
                 PDF Report
               </MenubarItem>
               <MenubarItem onClick={handleExportTerraform}>

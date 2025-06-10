@@ -16,7 +16,10 @@ import {
   Cog,
   Send,
   DollarSign,
-  ChevronLeft
+  ChevronLeft,
+  Mail,
+  FileOutput,
+  MessageSquare
 } from 'lucide-react';
 
 interface ComponentItem {
@@ -74,7 +77,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'data-sources',
-      name: ' Data Sources',
+      name: 'Data Sources',
       icon: <FileText className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -96,7 +99,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
     },
     {
       id: 'logic',
-      name: ' Logic',
+      name: 'Logic',
       icon: <Cog className="h-4 w-4" />,
       expanded: false,
       items: [
@@ -111,9 +114,9 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
       icon: <Send className="h-4 w-4" />,
       expanded: false,
       items: [
-        { id: 'email', name: 'Email', type: 'output', subtype: 'email', description: 'Send email notifications' },
-        { id: 'slack', name: 'Slack', type: 'output', subtype: 'slack', description: 'Send Slack messages' },
-        { id: 'pdf', name: 'PDF Generator', type: 'output', subtype: 'pdf', description: 'Generate PDF reports' }
+        { id: 'email', name: 'Email', type: 'output', subtype: 'email', description: 'Send email notifications', icon: <Mail className="h-4 w-4" /> },
+        { id: 'slack', name: 'Slack', type: 'output', subtype: 'slack', description: 'Send Slack messages', icon: <MessageSquare className="h-4 w-4" /> },
+        { id: 'pdf', name: 'PDF Generator', type: 'output', subtype: 'pdf', description: 'Generate PDF reports', icon: <FileOutput className="h-4 w-4" /> }
       ]
     }
   ]);
@@ -202,9 +205,12 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
                       onClick={() => onAddNode(item.type, item.subtype, item.name, item.provider)}
                     >
                       <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900">{item.name}</h4>
-                          <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                        <div className="flex-1 min-w-0 pr-2">
+                          <div className="flex items-center gap-2 mb-1">
+                            {item.icon && <span className="text-gray-600">{item.icon}</span>}
+                            <h4 className="text-sm font-medium text-gray-900 truncate">{item.name}</h4>
+                          </div>
+                          <p className="text-xs text-gray-600 break-words">{item.description}</p>
                           {item.cost && (
                             <div className="flex items-center gap-1 mt-2">
                               <DollarSign className="h-3 w-3 text-green-600" />
@@ -212,7 +218,7 @@ const EnhancedComponentPalette = ({ onAddNode, isCollapsed, onToggle }: Enhanced
                             </div>
                           )}
                         </div>
-                        <Badge variant="outline" className="text-xs ml-2">
+                        <Badge variant="outline" className="text-xs flex-shrink-0">
                           {item.type}
                         </Badge>
                       </div>
