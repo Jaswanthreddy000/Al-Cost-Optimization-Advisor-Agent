@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, LogIn, Workflow, Shield, ArrowRight } from 'lucide-react';
+import { Bot, LogIn, Workflow, Shield, ArrowRight, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ChatInterfaceWithSidebar from '@/components/ChatInterfaceWithSidebar';
 import Hero from '@/components/Hero';
@@ -11,6 +10,7 @@ import Features from '@/components/Features';
 import About from '@/components/About';
 import UserMenu from '@/components/UserMenu';
 import WorkflowBuilder from './WorkflowBuilder';
+import UseCases from '@/components/UseCases';
 import ProblemSection from '@/components/ProblemSection';
 import TransformationSection from '@/components/TransformationSection';
 import PricingSection from '@/components/PricingSection';
@@ -69,8 +69,12 @@ const Index = () => {
             
             <div className="flex items-center space-x-4">
               <Tabs value={activeTab} onValueChange={handleTabChange} className="w-auto">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="home">Home</TabsTrigger>
+                  <TabsTrigger value="use-cases">
+                    <Lightbulb className="h-4 w-4 mr-1" />
+                    Use Cases
+                  </TabsTrigger>
                   <TabsTrigger value="chat">AI Chat</TabsTrigger>
                   <TabsTrigger value="workflow">
                     <Workflow className="h-4 w-4 mr-1" />
@@ -149,6 +153,10 @@ const Index = () => {
                 </div>
               </section>
             </div>
+          </TabsContent>
+
+          <TabsContent value="use-cases" className="mt-0">
+            <UseCases />
           </TabsContent>
 
           <TabsContent value="chat" className="mt-0">
