@@ -444,11 +444,10 @@ const CarouselCard: React.FC<CarouselCardProps> = ({ useCase, onClick }) => {
             <h3 className="font-medium text-sm text-gray-900 line-clamp-2">{useCase.title}</h3>
           </div>
           
-          <div className={`transition-all duration-300 ${isHovered ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-1'}`}>
-            <div className="bg-blue-50 text-blue-700 rounded px-2 py-1">
-              <p className="text-xs font-medium">{useCase.hoverMetric}</p>
-            </div>
+          <div className="bg-blue-50 text-blue-700 rounded px-2 py-1">
+            <p className="text-xs font-medium">{useCase.hoverMetric}</p>
           </div>
+
         </CardContent>
       </Card>
     </div>
