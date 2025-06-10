@@ -12,7 +12,6 @@ import TableChart from './TableChart';
 import DashboardRenderer from './DashboardRenderer';
 import PdfDownloadControls from './PdfDownloadControls';
 import MessageCheckbox from './MessageCheckbox';
-import { detectTablesInText } from '@/utils/tableDetector';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import ReactMarkdown from 'react-markdown';
@@ -205,62 +204,6 @@ const ChatInterfaceWithSidebar = () => {
     return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-//   const renderMessageContent = (message: any) => {
-//     const viewMode = messageViewModes[message.id] || 'text';
-  
-//     try {
-//       const parsedContent = JSON.parse(message.content) as {
-//         textView?: string;
-//         dashboardView?: {
-//           summaryCards?: any[];
-//           tables?: any[];
-//           charts?: any[];
-//           alerts?: any[];
-//           recommendations?: any[];
-//         };
-//       };
-  
-//       if (viewMode === 'dashboard' && parsedContent.dashboardView) {
-//         return <DashboardRenderer content={parsedContent.dashboardView} />;
-//       }
-  
-//       // Default to textView if available, otherwise fallback to raw content
-//       const markdownContent = parsedContent.textView || message.content;
-  
-//       return (
-//         <div className="prose max-w-none text-sm leading-relaxed">
-//           <ReactMarkdown 
-//             remarkPlugins={[remarkGfm]} 
-//             rehypePlugins={[rehypeRaw]}
-//             components={{
-//               h1: ({ node, ...props }) => <h1 className="mt-4 mb-2 text-xl font-bold" {...props} />,
-//               h2: ({ node, ...props }) => <h2 className="mt-4 mb-2 text-lg font-semibold" {...props} />,
-//               h3: ({ node, ...props }) => <h3 className="mt-4 mb-2 text-base font-medium" {...props} />,
-//               p: ({ node, ...props }) => <p className="mb-2" {...props} />,
-//               ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2" {...props} />,
-//               ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2" {...props} />,
-//               table: ({ node, ...props }) => (
-//                 <div className="overflow-x-auto my-4">
-//                   <table className="min-w-full border" {...props} />
-//                 </div>
-//               ),
-//             }}
-//           >
-//             {markdownContent}
-//           </ReactMarkdown>
-//         </div>
-//       );
-//     } catch (e) {
-//       // Fallback for non-JSON messages
-//       return (
-//         <div className="text-sm leading-relaxed whitespace-pre-wrap">
-//           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-//             {message.content}
-//           </ReactMarkdown>
-//         </div>
-//       );
-//     }
-//   };
 const renderMessageContent = (message: any) => {
     const viewMode = messageViewModes[message.id] || 'text';
     console.log('Current view mode:', viewMode);
