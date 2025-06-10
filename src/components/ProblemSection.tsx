@@ -33,7 +33,7 @@ const ProblemSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-red-50 to-orange-50">
+    <section className="py-20 bg-gradient-to-br from-blue-50 to-black-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <Badge variant="secondary" className="mb-4 bg-red-100 text-red-700 border-red-200">

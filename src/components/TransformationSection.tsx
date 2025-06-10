@@ -33,7 +33,7 @@ const TransformationSection = () => {
           </div>
           
           <div className="text-center">
-            <ArrowRight className="h-8 w-8 mx-auto mb-8 text-yellow-300" />
+            {/* <ArrowRight className="h-8 w-8 mx-auto mb-8 text-yellow-300" /> */}
             <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl font-bold">2</span>
             </div>
@@ -42,7 +42,7 @@ const TransformationSection = () => {
           </div>
           
           <div className="text-center">
-            <ArrowRight className="h-8 w-8 mx-auto mb-8 text-yellow-300" />
+            {/* <ArrowRight className="h-8 w-8 mx-auto mb-8 text-yellow-300" /> */}
             <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl font-bold">3</span>
             </div>

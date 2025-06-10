@@ -135,7 +135,7 @@ const Index = () => {
                       }}
                       className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg"
                     >
-                      {user ? "Start Optimizing Now" : "Get Free Analysis"}
+                      {user ? "Start Optimizing Now using AI Chat" : "Get Free Analysis"}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     <Button 
