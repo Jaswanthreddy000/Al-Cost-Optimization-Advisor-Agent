@@ -112,19 +112,20 @@ const ChatInterfaceWithSidebar = () => {
     try {
       console.log('Sending message to agent API:', userMessageContent);
       
-      const response = await fetch('https://agent-prod.studio.lyzr.ai/v3/inference/chat/', {
+      const response = await fetch(import.meta.env.VITE_AGENT_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': 'sk-default-DDZnBXRl6l6iKKj7YT39T4rCh4Qvb7za'
+          'x-api-key': import.meta.env.VITE_AGENT_API_KEY
         },
         body: JSON.stringify({
-          user_id: 'jaswanth6365@gmail.com',
-          agent_id: '683d63dfe5bd32ccbe6470a8',
-          session_id: '683d63dfe5bd32ccbe6470a8-1rw8wb2mp7r',
+          user_id: import.meta.env.VITE_DEFAULT_USER_EMAIL,
+          agent_id: import.meta.env.VITE_AGENT_ID,
+          session_id: import.meta.env.VITE_SESSION_ID,
           message: userMessageContent
         })
       });
+    
     //    console.log("Responsejson="+response.json());
     //    console.log("Response::"+response);
     //   if (!response.ok) {

@@ -179,11 +179,11 @@ const WorkflowActionsPanel = ({
                   {costEstimation.nodeBreakdown.map((nodeData) => (
                     <div key={nodeData.nodeId} className="p-2 border border-gray-200 rounded text-xs">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium">{nodeData.nodeName}</span>
-                        <span className="text-green-600">${nodeData.estimatedCost}</span>
+                        <span className="font-medium">{nodeData.type}</span>
+                        <span className="text-green-600">${nodeData.cost}</span>
                       </div>
                       <div className="text-gray-500 text-xs">
-                        <div>Type: {nodeData.nodeType}</div>
+                        <div>Type: {nodeData.type}</div>
                         {nodeData.provider && <div>Provider: {nodeData.provider}</div>}
                         {nodeData.service && <div>Service: {nodeData.service}</div>}
                       </div>

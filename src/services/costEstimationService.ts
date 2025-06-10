@@ -34,10 +34,10 @@ export interface CostEstimationRequest {
 export interface NodeCostBreakdown {
   nodeId: string;
   nodeName: string;
-  nodeType: string;
+  type: string;
   provider?: string;
   service?: string;
-  estimatedCost: number;
+  cost: number;
   costUnit: string;
   breakdown: {
     compute?: number;
@@ -195,42 +195,19 @@ export const estimateWorkflowCost = async (
   try {
     console.log('Sending cost estimation request:', requestData.workflow_description);
     
-    // Replace with actual lyzr.ai endpoint
-    // const response = await fetch('https://api.lyzr.ai/v1/cost-estimation', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     // Add API key header if needed
-    //     // 'Authorization': `Bearer ${API_KEY}`
-    //   },
-    //   body: JSON.stringify(requestData)
-    // });
-    // const response = await fetch(import.meta.env.VITE_AGENT_API_URL, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'x-api-key': import.meta.env.VITE_AGENT_API_KEY
-    //     },
-    //     body: JSON.stringify({
-    //       user_id: import.meta.env.VITE_DEFAULT_USER_EMAIL,
-    //       agent_id: import.meta.env.VITE_AGENT_ID,
-    //       session_id: import.meta.env.VITE_SESSION_ID,
-    //       message: JSON.stringify(requestData)
-    //     })
-    //   });
-    const response = await fetch('https://agent-prod.studio.lyzr.ai/v3/inference/chat/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': 'sk-default-gLsaQsiInbLlKDdFTxKqVtaBvrSIeTIk'
-        },
-        body: JSON.stringify({
-            user_id: 'reddyjaswanth361@gmail.com',
-            agent_id: '6846bcf1e49ec5e8feda577d',
-            session_id: '6846bcf1e49ec5e8feda577d-7spmfclhbej',
-            message: JSON.stringify(requestData) // your request payload as object
-        })
-      });
+    const response = await fetch(import.meta.env.VITE_WORKFLOW_API_URL, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_WORKFLOW_API_KEY
+      },
+      body: JSON.stringify({
+          user_id: import.meta.env.VITE_WORKFLOW_USER_ID,
+          agent_id: import.meta.env.VITE_WORKFLOW_AGENT_ID,
+          session_id: import.meta.env.VITE_WORKFLOW_SESSION_ID,
+          message: JSON.stringify(requestData)
+      })
+  });
     console.log(response);
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status}`);
@@ -246,12 +223,104 @@ export const estimateWorkflowCost = async (
     return generateMockCostEstimation(nodes, edges);
   }
 };
+// Update the transform logic in estimateWorkflowCost function
+// export const estimateWorkflowCost = async (
+//   nodes: Node[], 
+//   edges: Edge[], 
+//   options: {
+//     estimationType?: 'monthly' | 'per_request' | 'hourly';
+//     expectedVolume?: {
+//       requests_per_month?: number;
+//       data_processed_gb?: number;
+//       storage_gb?: number;
+//     };
+//   } = {}
+// ): Promise<CostEstimationResponse> => {
+//   const workflowDescription = createWorkflowDescription(nodes);
+  
+//   const requestData: CostEstimationRequest = {
+//     workflow_description: workflowDescription,
+//     estimationType: options.estimationType || 'monthly',
+//     expectedVolume: options.expectedVolume || {
+//       requests_per_month: 10000,
+//       data_processed_gb: 1,
+//       storage_gb: 0.1
+//     }
+//   };
+
+//   try {
+//     const response = await fetch(import.meta.env.VITE_WORKFLOW_API_URL, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'x-api-key': import.meta.env.VITE_WORKFLOW_API_KEY
+//       },
+//       body: JSON.stringify({
+//         user_id: import.meta.env.VITE_WORKFLOW_USER_ID,
+//         agent_id: import.meta.env.VITE_WORKFLOW_AGENT_ID,
+//         session_id: import.meta.env.VITE_WORKFLOW_SESSION_ID,
+//         message: JSON.stringify(requestData)
+//       })
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`API request failed: ${response.status}`);
+//     }
+
+//     const responseData = await response.json();
+//     const apiResponse = typeof responseData === 'string' ? JSON.parse(responseData) : responseData;
+
+//     // Transform the API response to match your interface
+//     const transformedResponse: CostEstimationResponse = {
+//       totalCost: apiResponse.totalCost,
+//       costUnit: apiResponse.costUnit || "USD",
+//       estimationType: apiResponse.estimationType || "monthly",
+//       currency: apiResponse.currency || "USD",
+//       nodeBreakdown: apiResponse.nodeBreakdown.map((node: any) => ({
+//         nodeId: node.nodeId,
+//         nodeName: node.nodeId, // Use nodeId as fallback name
+//         nodeType: node.type || node.nodeType || "unknown",
+//         provider: node.provider,
+//         service: node.service,
+//         estimatedCost: node.cost || node.estimatedCost || 0,
+//         costUnit: apiResponse.costUnit || "USD",
+//         breakdown: {
+//           compute: node.breakdown?.compute || (node.type === 'aiModel' ? node.cost : 0),
+//           storage: node.breakdown?.storage || (node.type === 'cloud' ? node.cost : 0),
+//           network: node.breakdown?.network || 0,
+//           api_calls: node.breakdown?.api_calls || 0,
+//           tokens: node.tokens || node.breakdown?.tokens || 0
+//         }
+//       })),
+//       summary: {
+//         totalCompute: apiResponse.summary?.totalCompute || 0,
+//         totalStorage: apiResponse.summary?.totalStorage || 0,
+//         totalNetwork: apiResponse.summary?.totalNetwork || 0,
+//         totalApiCalls: apiResponse.summary?.totalApiCalls || 0,
+//         totalTokens: apiResponse.summary?.totalTokens || 0
+//       },
+//       optimizationSuggestions: (apiResponse.optimizationSuggestions || []).map((suggestion: any) => ({
+//         nodeId: suggestion.nodeId || '',
+//         suggestion: suggestion.suggestion || suggestion.message || "",
+//         potentialSavings: suggestion.potentialSavings || suggestion.savings || 0,
+//         alternativeProvider: suggestion.alternativeProvider,
+//         alternativeService: suggestion.alternativeService
+//       })),
+//       timestamp: apiResponse.timestamp || new Date().toISOString()
+//     };
+
+//     return transformedResponse;
+//   } catch (error) {
+//     console.error('Cost estimation API error:', error);
+//     return generateMockCostEstimation(nodes, edges);
+//   }
+// };
 
 // Mock data generator for development
 const generateMockCostEstimation = (nodes: Node[], edges: Edge[]): CostEstimationResponse => {
   const nodeBreakdown: NodeCostBreakdown[] = nodes.map(node => {
     const baseCost = Math.random() * 50 + 5;
-    const nodeType = node.type || 'unknown';
+    const type = node.type || 'unknown';
     const provider = typeof node.data?.provider === 'string' ? node.data.provider : undefined;
     const subtype = typeof node.data?.subtype === 'string' ? node.data.subtype : undefined;
     const config = node.data?.config || {};
@@ -260,7 +329,7 @@ const generateMockCostEstimation = (nodes: Node[], edges: Edge[]): CostEstimatio
     let costUnit = 'USD/month';
     
     // Adjust cost based on node type and configuration
-    switch (nodeType) {
+    switch (type) {
       case 'aiModel':
         const maxTokens = getConfigProperty(config, 'maxTokens');
         if (maxTokens && typeof maxTokens === 'number') {
@@ -286,10 +355,10 @@ const generateMockCostEstimation = (nodes: Node[], edges: Edge[]): CostEstimatio
     return {
       nodeId: node.id,
       nodeName: typeof node.data?.label === 'string' ? node.data.label : node.id,
-      nodeType,
+      type,
       provider,
       service: subtype,
-      estimatedCost: parseFloat(cost.toFixed(2)),
+      cost: parseFloat(cost.toFixed(2)),
       costUnit,
       breakdown: {
         compute: parseFloat((cost * 0.6).toFixed(2)),
@@ -300,7 +369,7 @@ const generateMockCostEstimation = (nodes: Node[], edges: Edge[]): CostEstimatio
     };
   });
 
-  const totalCost = nodeBreakdown.reduce((sum, node) => sum + node.estimatedCost, 0);
+  const totalCost = nodeBreakdown.reduce((sum, node) => sum + node.cost, 0);
 
   return {
     totalCost: parseFloat(totalCost.toFixed(2)),
