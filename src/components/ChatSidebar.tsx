@@ -268,7 +268,7 @@ const ChatSidebar = ({ currentSessionId, onSessionSelect, onNewChat }: ChatSideb
                           e.stopPropagation();
                           startEditing(session);
                         }}
-                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 hover:bg-gray-200"
+                        className="h-8 w-8 p-0 text-gray-600 hover:text-blue-600 transition-colors"
                       >
                         <Edit2 className="h-3 w-3" />
                       </Button>
@@ -279,7 +279,7 @@ const ChatSidebar = ({ currentSessionId, onSessionSelect, onNewChat }: ChatSideb
                           e.stopPropagation();
                           handleDeleteSession(session.id);
                         }}
-                        className="h-8 w-8 p-0 text-black-600 hover:bg-purple-600 hover:text-white"
+                        className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 transition-colors"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>

@@ -92,6 +92,136 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_edges: {
+        Row: {
+          created_at: string
+          edge_id: string
+          edge_type: string
+          id: string
+          source_handle: string | null
+          source_node_id: string
+          style: Json | null
+          target_handle: string | null
+          target_node_id: string
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          edge_id: string
+          edge_type?: string
+          id?: string
+          source_handle?: string | null
+          source_node_id: string
+          style?: Json | null
+          target_handle?: string | null
+          target_node_id: string
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          edge_id?: string
+          edge_type?: string
+          id?: string
+          source_handle?: string | null
+          source_node_id?: string
+          style?: Json | null
+          target_handle?: string | null
+          target_node_id?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_edges_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_nodes: {
+        Row: {
+          config: Json | null
+          created_at: string
+          id: string
+          label: string
+          node_id: string
+          node_type: string
+          position_x: number
+          position_y: number
+          style: Json | null
+          subtype: string | null
+          workflow_id: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          label: string
+          node_id: string
+          node_type: string
+          position_x: number
+          position_y: number
+          style?: Json | null
+          subtype?: string | null
+          workflow_id: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          id?: string
+          label?: string
+          node_id?: string
+          node_type?: string
+          position_x?: number
+          position_y?: number
+          style?: Json | null
+          subtype?: string | null
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_nodes_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          updated_at: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          updated_at?: string
+          user_id: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

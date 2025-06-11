@@ -1,2 +1,2 @@
 [project]
-id = "${SUPABASE_PROJECT_ID}"
+id = "${VITE_SUPABASE_PROJECT_ID}"

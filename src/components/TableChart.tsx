@@ -8,6 +8,7 @@ import { TableData, prepareChartData, isNumericData } from '@/utils/tableDetecto
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface TableChartProps {
   table: TableData;
@@ -22,6 +23,25 @@ const TableChart = ({ table, index }: TableChartProps) => {
   const chartData = prepareChartData(table);
   const hasNumericData = isNumericData(table.rows);
   
+  const renderTableCell = (content: string) => {
+    return (
+      <div className="prose max-w-none text-sm">
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm]} 
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            p: ({ node, ...props }) => <span {...props} />,
+            strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+            em: ({ node, ...props }) => <em className="italic" {...props} />,
+            code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs" {...props} />,
+          }}
+        >
+          {content}
+        </ReactMarkdown>
+      </div>
+    );
+  };
+  
   const renderChart = () => {
     if (!hasNumericData || chartType === 'table') {
       return (
@@ -30,7 +50,7 @@ const TableChart = ({ table, index }: TableChartProps) => {
             <TableHeader>
               <TableRow>
                 {table.headers.map((header, i) => (
-                  <TableHead key={i}>{header}</TableHead>
+                  <TableHead key={i}>{renderTableCell(header)}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -38,7 +58,7 @@ const TableChart = ({ table, index }: TableChartProps) => {
               {table.rows.map((row, i) => (
                 <TableRow key={i}>
                   {row.map((cell, j) => (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{cell}</ReactMarkdown>
+                    <TableCell key={j}>{renderTableCell(cell)}</TableCell>
                   ))}
                 </TableRow>
               ))}
