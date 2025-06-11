@@ -316,7 +316,7 @@ const UseCases = () => {
 
   const handleDeployWorkflow = (workflowId: string) => {
     // Navigate to workflow with the specific template
-    console.log(`Deploying workflow: ${workflowId}`);
+    // console.log(`Deploying workflow: ${workflowId}`);
     // This would typically navigate to the workflow builder with the template loaded
     window.location.href = `/workflow-builder?template=${workflowId}`;
   };

@@ -50,7 +50,7 @@ const ChatSidebar = ({ currentSessionId, onSessionSelect, onNewChat }: ChatSideb
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          console.log('Session change:', payload);
+          // console.log('Session change:', payload);
           fetchSessions(); // Refresh sessions when changes occur
         }
       )
@@ -74,7 +74,7 @@ const ChatSidebar = ({ currentSessionId, onSessionSelect, onNewChat }: ChatSideb
       if (error) throw error;
       setSessions(data || []);
     } catch (error) {
-      console.error('Error fetching sessions:', error);
+      // console.error('Error fetching sessions:', error);
     } finally {
       setIsLoading(false);
     }

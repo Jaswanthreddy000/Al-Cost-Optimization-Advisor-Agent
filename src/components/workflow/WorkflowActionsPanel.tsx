@@ -44,17 +44,17 @@ const WorkflowActionsPanel = ({
   // Calculate cost estimation only when counter changes (button clicked) and only once per click
   React.useEffect(() => {
     if (costEstimationCounter > 0 && costEstimationCounter !== lastEstimationCounter && nodes.length > 0) {
-      console.log('Running cost estimation for counter:', costEstimationCounter);
+      // console.log('Running cost estimation for counter:', costEstimationCounter);
       setLastEstimationCounter(costEstimationCounter);
       setIsLoading(true);
       
       estimateWorkflowCost(nodes, edges)
         .then((estimation) => {
           setCostEstimation(estimation);
-          console.log('Cost estimation received:', estimation);
+          // console.log('Cost estimation received:', estimation);
         })
         .catch((error) => {
-          console.error('Cost estimation failed:', error);
+          // console.error('Cost estimation failed:', error);
         })
         .finally(() => {
           setIsLoading(false);

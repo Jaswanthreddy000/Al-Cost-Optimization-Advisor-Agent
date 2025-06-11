@@ -109,7 +109,7 @@ const ChatInterfaceWithSidebar = () => {
     }
     
     try {
-      console.log('Sending message to agent API:', userMessageContent);
+      // // console.log('Sending message to agent API:', userMessageContent);
       
       const response = await fetch(import.meta.env.VITE_AGENT_API_URL, {
         method: 'POST',
@@ -125,8 +125,8 @@ const ChatInterfaceWithSidebar = () => {
         })
       });
     
-    //    console.log("Responsejson="+response.json());
-    //    console.log("Response::"+response);
+    //    // console.log("Responsejson="+response.json());
+    //    // console.log("Response::"+response);
     //   if (!response.ok) {
     //     throw new Error(`HTTP error! status: ${response.status}`);
     //   }
@@ -147,7 +147,7 @@ const ChatInterfaceWithSidebar = () => {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const data = await response.json();
-    console.log('Raw API response:', data);
+    // // console.log('Raw API response:', data);
 
     // Handle both response formats
     let assistantResponse;
@@ -173,11 +173,11 @@ const ChatInterfaceWithSidebar = () => {
       assistantResponse = data;
     }
 
-    console.log('Processed assistant response:', assistantResponse);
+    // // console.log('Processed assistant response:', assistantResponse);
     await saveMessage(JSON.stringify(assistantResponse), 'assistant');
       
     } catch (error) {
-      console.error('Error sending message:', error);
+      // // console.error('Error sending message:', error);
       setError('Failed to send message. Please check your connection and try again.');
       
       toast({
@@ -206,22 +206,22 @@ const ChatInterfaceWithSidebar = () => {
 
 const renderMessageContent = (message: any) => {
     const viewMode = messageViewModes[message.id] || 'text';
-    console.log('Current view mode:', viewMode);
-    console.log('Original message content:', message.content);
+    // // console.log('Current view mode:', viewMode);
+    // // console.log('Original message content:', message.content);
   
     try {
       // Try to parse the content as JSON
       let parsedContent;
       try {
         parsedContent = JSON.parse(message.content);
-        console.log('Parsed content (first attempt):', parsedContent);
+        // // console.log('Parsed content (first attempt):', parsedContent);
       } catch (firstError) {
         // If first parse fails, check if it's nested JSON
         try {
           parsedContent = JSON.parse(JSON.parse(message.content));
-          console.log('Parsed content (second attempt):', parsedContent);
+          // // console.log('Parsed content (second attempt):', parsedContent);
         } catch (secondError) {
-          console.log('Failed to parse content as JSON:', secondError);
+          // // console.log('Failed to parse content as JSON:', secondError);
           throw new Error('Not valid JSON');
         }
       }
@@ -232,13 +232,13 @@ const renderMessageContent = (message: any) => {
   
       // Case 1: New format with textView and dashboardView
       if (parsedContent.textView) {
-        console.log('Detected new response format');
+        // // console.log('Detected new response format');
         textContent = parsedContent.textView;
         dashboardContent = parsedContent.dashboardView;
       } 
       // Case 2: Old format with response and module_outputs
       else if (parsedContent.response) {
-        console.log('Detected old response format');
+        // console.log('Detected old response format');
         textContent = parsedContent.response;
         
         // Try to extract dashboard content from the response text
@@ -249,7 +249,7 @@ const renderMessageContent = (message: any) => {
             dashboardContent = responseJson.dashboardView;
           }
         } catch (e) {
-          console.log('Could not extract dashboard content from response text');
+          // console.log('Could not extract dashboard content from response text');
         }
         
         // Fallback to module_outputs if available
@@ -259,21 +259,21 @@ const renderMessageContent = (message: any) => {
       }
       // Case 3: Plain text response
       else {
-        console.log('Detected plain text response');
+        // console.log('Detected plain text response');
         textContent = message.content;
       }
   
-      console.log('Final text content:', textContent);
-      console.log('Final dashboard content:', dashboardContent);
+      // console.log('Final text content:', textContent);
+      // console.log('Final dashboard content:', dashboardContent);
   
       // Render dashboard view if requested and available
       if (viewMode === 'dashboard' && dashboardContent) {
-        console.log('Rendering dashboard view');
+        // console.log('Rendering dashboard view');
         return <DashboardRenderer content={dashboardContent} />;
       }
   
       // Default to text view
-      console.log('Rendering text view');
+      // console.log('Rendering text view');
       return (
         <div className="prose max-w-none text-sm leading-relaxed">
           <ReactMarkdown 
@@ -294,7 +294,7 @@ const renderMessageContent = (message: any) => {
       );
   
     } catch (e) {
-      console.error('Error rendering message:', e);
+      // console.error('Error rendering message:', e);
       // Fallback for non-JSON messages
       return (
         <div className="text-sm leading-relaxed whitespace-pre-wrap">

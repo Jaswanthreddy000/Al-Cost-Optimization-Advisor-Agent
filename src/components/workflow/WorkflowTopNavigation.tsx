@@ -223,7 +223,7 @@ const WorkflowTopNavigation = ({
         description: "Workflow saved successfully",
       });
     } catch (error) {
-      console.error('Save workflow error:', error);
+      // console.error('Save workflow error:', error);
       toast({
         title: "Error",
         description: "Failed to save workflow. Please try again.",
@@ -283,7 +283,7 @@ const WorkflowTopNavigation = ({
               description: `Imported workflow: ${typeof workflowName === 'string' ? workflowName : 'Unnamed'}`,
             });
           } catch (error) {
-            console.error('Import error:', error);
+            // console.error('Import error:', error);
             toast({
               title: "Import Error",
               description: "Invalid workflow file format",
@@ -468,7 +468,7 @@ output "workflow_info" {
           description: `Workflow "${workflowName}" deleted successfully`,
         });
       } catch (error) {
-        console.error('Delete workflow error:', error);
+        // console.error('Delete workflow error:', error);
         toast({
           title: "Error",
           description: "Failed to delete workflow. Please try again.",
@@ -632,7 +632,7 @@ output "workflow_info" {
         description: "Workflow diagram saved as PDF successfully",
       });
     } catch (error) {
-      console.error('PDF export error:', error);
+      // console.error('PDF export error:', error);
       toast({
         title: "Export Error",
         description: "Failed to generate PDF. Please try again.",

@@ -12,7 +12,7 @@ export const useWorkflowOperations = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        console.error('No authenticated user');
+        // console.error('No authenticated user');
         return;
       }
 
@@ -25,7 +25,7 @@ export const useWorkflowOperations = () => {
       if (error) throw error;
       setWorkflows(data || []);
     } catch (error) {
-      console.error('Error fetching workflows:', error);
+      // console.error('Error fetching workflows:', error);
       toast({
         title: "Error",
         description: "Failed to fetch workflows",
@@ -58,7 +58,7 @@ export const useWorkflowOperations = () => {
 
       await fetchWorkflows();
     } catch (error) {
-      console.error('Error deleting workflow:', error);
+      // console.error('Error deleting workflow:', error);
       toast({
         title: "Error",
         description: "Failed to delete workflow",
