@@ -274,11 +274,11 @@ const UseCaseDetail: React.FC<UseCaseDetailProps> = ({ useCase, onBack, onDeploy
 
             {/* CTA */}
             <Card>
-              <CardContent className="pt-6">
+              <CardContent className="pt-6">In Building
                 <div className="space-y-4">
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700"
-                    onClick={handleDeployWorkflow}
+                    // onClick={handleDeployWorkflow}
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Deploy This Workflow

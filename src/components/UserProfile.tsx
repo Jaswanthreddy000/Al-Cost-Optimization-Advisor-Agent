@@ -39,7 +39,7 @@ const UserProfile = ({ user }: UserProfileProps) => {
         if (error) throw error;
         setProfile(data);
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        // console.error('Error fetching profile:', error);
       } finally {
         setIsLoading(false);
       }

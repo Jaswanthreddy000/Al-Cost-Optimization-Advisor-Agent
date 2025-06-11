@@ -49,7 +49,7 @@ const WorkflowBuilderInner = () => {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      console.log('Connecting nodes:', params);
+      // console.log('Connecting nodes:', params);
       setEdges((eds) => addEdge(params, eds));
       toast({
         title: "Nodes Connected",
@@ -190,7 +190,7 @@ const WorkflowBuilderInner = () => {
         setCurrentWorkflowId(workflowId);
       }
     } catch (error) {
-      console.error('Error saving workflow:', error);
+      // console.error('Error saving workflow:', error);
       // Error handling is done in the hook
     }
   }, [saveWorkflow, nodes, edges, currentWorkflowId]);
@@ -215,7 +215,7 @@ const WorkflowBuilderInner = () => {
         });
       }
     } catch (error) {
-      console.error('Error loading workflow:', error);
+      // console.error('Error loading workflow:', error);
     }
   }, [loadWorkflow, setNodes, setEdges, handleNodeConfigChange]);
 
@@ -246,10 +246,10 @@ const WorkflowBuilderInner = () => {
       return;
     }
 
-    console.log('Cost estimation button clicked, incrementing counter from', costEstimationCounter);
+    // console.log('Cost estimation button clicked, incrementing counter from', costEstimationCounter);
     setCostEstimationCounter(prev => {
       const newValue = prev + 1;
-      console.log('New cost estimation counter value:', newValue);
+      // console.log('New cost estimation counter value:', newValue);
       return newValue;
     });
     toast({

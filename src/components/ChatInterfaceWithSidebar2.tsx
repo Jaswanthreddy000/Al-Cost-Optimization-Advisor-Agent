@@ -123,7 +123,7 @@ const ChatInterfaceWithSidebar = () => {
       await saveMessage(assistantResponse, 'assistant');
       
     } catch (error) {
-      console.error('Error sending message:', error);
+      // console.error('Error sending message:', error);
       setError('Failed to send message. Please check your connection and try again.');
       
       toast({

@@ -29,36 +29,36 @@ const Profile = () => {
   const [fullName, setFullName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
-  console.log('Profile page - Auth loading:', authLoading, 'User:', user?.email);
+  // console.log('Profile page - Auth loading:', authLoading, 'User:', user?.email);
 
   useEffect(() => {
     // Wait for auth to complete loading
     if (authLoading) {
-      console.log('Profile: Still loading auth...');
+      // console.log('Profile: Still loading auth...');
       return;
     }
 
     // If auth is done loading and no user, redirect to auth
     if (!authLoading && !user) {
-      console.log('Profile: No user found, redirecting to auth');
+      // console.log('Profile: No user found, redirecting to auth');
       navigate('/auth');
       return;
     }
 
     // If we have a user, fetch profile
     if (user) {
-      console.log('Profile: User found, fetching profile for:', user.email);
+      // console.log('Profile: User found, fetching profile for:', user.email);
       fetchProfile();
     }
   }, [user, authLoading, navigate]);
 
   const fetchProfile = async () => {
     if (!user?.id) {
-      console.log('Profile: No user ID available');
+      // console.log('Profile: No user ID available');
       return;
     }
 
-    console.log('Profile: Fetching profile for user ID:', user.id);
+    // console.log('Profile: Fetching profile for user ID:', user.id);
     setIsLoading(true);
 
     try {
@@ -68,7 +68,7 @@ const Profile = () => {
         .eq('id', user.id)
         .single();
 
-      console.log('Profile: Fetch result:', { data, error });
+      // console.log('Profile: Fetch result:', { data, error });
 
       if (error && error.code !== 'PGRST116') throw error;
       
@@ -76,9 +76,9 @@ const Profile = () => {
         setProfile(data);
         setFullName(data.full_name || '');
         setAvatarUrl(data.avatar_url || '');
-        console.log('Profile: Profile loaded successfully');
+        // console.log('Profile: Profile loaded successfully');
       } else {
-        console.log('Profile: No profile found, creating new one');
+        // console.log('Profile: No profile found, creating new one');
         // Create profile if it doesn't exist
         const newProfile = {
           id: user.id,
@@ -99,10 +99,10 @@ const Profile = () => {
         setProfile(createdProfile);
         setFullName(createdProfile.full_name || '');
         setAvatarUrl(createdProfile.avatar_url || '');
-        console.log('Profile: New profile created');
+        // console.log('Profile: New profile created');
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      // console.error('Error fetching profile:', error);
       toast({
         title: "Error loading profile",
         description: "Could not load your profile information.",
@@ -161,7 +161,7 @@ const Profile = () => {
         description: "Your profile photo has been uploaded successfully.",
       });
     } catch (error: any) {
-      console.error('Error uploading file:', error);
+      // console.error('Error uploading file:', error);
       toast({
         title: "Upload failed",
         description: error.message || "Could not upload your photo.",

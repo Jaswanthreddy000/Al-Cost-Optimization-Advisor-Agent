@@ -44,7 +44,7 @@ export const useWorkflowLoad = () => {
       return { workflow, nodes, edges };
 
     } catch (error) {
-      console.error('Error loading workflow:', error);
+      // console.error('Error loading workflow:', error);
       toast({
         title: "Error",
         description: "Failed to load workflow",

@@ -193,7 +193,7 @@ export const estimateWorkflowCost = async (
   };
 
   try {
-    console.log('Sending cost estimation request:', requestData.workflow_description);
+    // console.log('Sending cost estimation request:', requestData.workflow_description);
     
     const response = await fetch(import.meta.env.VITE_WORKFLOW_API_URL, {
       method: 'POST',
@@ -208,7 +208,7 @@ export const estimateWorkflowCost = async (
           message: JSON.stringify(requestData)
       })
   });
-    console.log(response);
+    // console.log(response);
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status}`);
     }
@@ -216,8 +216,8 @@ export const estimateWorkflowCost = async (
     const costData: CostEstimationResponse = JSON.parse(responseJson.response); 
     return costData;
   } catch (error) {
-    console.error('Cost estimation API error:', error);
-    console.log('Using mock data for development');
+    // console.error('Cost estimation API error:', error);
+    // console.log('Using mock data for development');
     
     // Return mock data for development/testing
     return generateMockCostEstimation(nodes, edges);

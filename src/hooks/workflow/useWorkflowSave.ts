@@ -117,7 +117,7 @@ export const useWorkflowSave = () => {
       return workflowId;
 
     } catch (error: any) {
-      console.error('Error saving workflow:', error);
+      // console.error('Error saving workflow:', error);
       
       let errorMessage = "Failed to save workflow";
       if (error.message?.includes('duplicate key')) {

@@ -61,7 +61,7 @@ export const useChatSession = () => {
       
       return data.id;
     } catch (error: any) {
-      console.error('Error creating session:', error);
+      // console.error('Error creating session:', error);
       toast({
         title: "Error creating session",
         description: error.message,
@@ -110,7 +110,7 @@ export const useChatSession = () => {
         setMessages([welcomeMessage]);
       }
     } catch (error: any) {
-      console.error('Error loading session:', error);
+      // console.error('Error loading session:', error);
       toast({
         title: "Error loading session",
         description: error.message,
@@ -161,7 +161,7 @@ export const useChatSession = () => {
 
       return newMessage;
     } catch (error: any) {
-      console.error('Error saving message:', error);
+      // console.error('Error saving message:', error);
       toast({
         title: "Error saving message",
         description: error.message,
@@ -182,7 +182,7 @@ export const useChatSession = () => {
         })
         .eq('id', sessionId);
     } catch (error) {
-      console.error('Error updating session title:', error);
+      // console.error('Error updating session title:', error);
     }
   };
 
