@@ -94,7 +94,7 @@ const AIModelNode = ({ data, id }: { data: any; id: string }) => {
                   <SelectItem key={model.value} value={model.value}>
                     <div className="flex flex-col">
                       <span>{model.label}</span>
-                      <span className="text-xs text-green-600">{model.cost}</span>
+                      {/* <span className="text-xs text-green-600">{model.cost}</span> */}
                     </div>
                   </SelectItem>
                 ))}
