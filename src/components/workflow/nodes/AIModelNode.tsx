@@ -117,8 +117,8 @@ const AIModelNode = ({ data, id }: { data: any; id: string }) => {
           {selectedModelData && (
             <div className="text-xs text-gray-600 space-y-1">
               <div>Provider: {data.provider?.charAt(0).toUpperCase() + data.provider?.slice(1)}</div>
-              <div>Cost: {selectedModelData.cost}</div>
-              <div>Estimated: ${((maxTokens / 1000) * parseFloat(selectedModelData.cost.match(/\$([0-9.]+)/)?.[1] || '0')).toFixed(4)}</div>
+              {/* <div>Cost: {selectedModelData.cost}</div>
+              <div>Estimated: ${((maxTokens / 1000) * parseFloat(selectedModelData.cost.match(/\$([0-9.]+)/)?.[1] || '0')).toFixed(4)}</div> */}
             </div>
           )}
         </div>
